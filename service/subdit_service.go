@@ -74,9 +74,22 @@ func (s *subditService) GetAllSubdit() (*dto.GetAllSubditResponse, errs.ErrMessa
 		return nil, err
 	}
 
+	var allSubditResponse []dto.SubditResponse
+
+	for _, subdit := range allSubdit {
+		subditResponse := dto.SubditResponse{
+			ID:        int(subdit.ID),
+			Name:      subdit.Name,
+			CreatedAt: subdit.CreatedAt,
+			UpdatedAt: subdit.UpdatedAt,
+		}
+
+		allSubditResponse = append(allSubditResponse, subditResponse)
+	}
+
 	response := dto.GetAllSubditResponse{
 		Status:    http.StatusOK,
-		AllSubdit: allSubdit,
+		AllSubdit: allSubditResponse,
 	}
 
 	return &response, nil

@@ -129,7 +129,7 @@ func (u *userService) Login(userCredentials dto.LoginUserRequest) (*dto.LoginUse
 		return nil, err
 	}
 
-	token, err := helpers.GenerateToken(int(user.ID), user.Name, user.Email, user.Role)
+	token, err := helpers.GenerateToken(int(user.ID), user.Name, user.Email, user.Role, int(user.SubditID))
 
 	if err != nil {
 		return nil, err

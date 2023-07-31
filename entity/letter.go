@@ -13,6 +13,7 @@ type Letter struct {
 	Number     string    `json:"number" gorm:"unique"`
 	Datetime   time.Time `json:"datetime"`
 	From       string    `json:"from"`
+	Type       string    `json:"type"`
 	ToSubditID uint      `json:"to_subdit_id"`
 	IsNotified bool      `json:"is_notified" gorm:"default:false"`
 }

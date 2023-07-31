@@ -13,13 +13,14 @@ import (
 var SECRET_KEY = os.Getenv("SECRET_KEY")
 var tokenError = errs.NewUnauthenticatedError("Invalid token")
 
-func claimToken(userID int, name string, email string, role string) jwt.MapClaims {
+func claimToken(userID int, name string, email string, role string, subditID int) jwt.MapClaims {
 	return jwt.MapClaims{
-		"user_id": userID,
-		"name":    name,
-		"email":   email,
-		"role":    role,
-		"exp":     3600 * time.Second,
+		"user_id":   userID,
+		"name":      name,
+		"email":     email,
+		"role":      role,
+		"subdit_id": subditID,
+		"exp":       3600 * time.Second,
 	}
 }
 
@@ -35,8 +36,8 @@ func signToken(signingMethod jwt.SigningMethod, token jwt.MapClaims) (string, er
 	return signedToken, nil
 }
 
-func GenerateToken(userID int, name string, email string, role string) (string, errs.ErrMessage) {
-	claim := claimToken(userID, name, email, role)
+func GenerateToken(userID int, name string, email string, role string, subditID int) (string, errs.ErrMessage) {
+	claim := claimToken(userID, name, email, role, subditID)
 
 	signedToken, err := signToken(jwt.SigningMethodHS256, claim)
 
@@ -89,6 +90,12 @@ func bindTokenToUserEntity(mapClaims jwt.MapClaims) (*entity.User, errs.ErrMessa
 		return nil, tokenError
 	} else {
 		user.Role = role
+	}
+
+	if subditID, ok := mapClaims["subdit_id"].(float64); !ok {
+		return nil, tokenError
+	} else {
+		user.SubditID = uint(subditID)
 	}
 
 	return &user, nil

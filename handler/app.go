@@ -57,7 +57,9 @@ func App() {
 	{
 		letterRoute.POST("/", middleware.Authentication(), middleware.Authorization(), letterHandler.CreateLetter)
 		letterRoute.GET("/:letterID", middleware.Authentication(), letterHandler.GetLetterByID)
-		letterRoute.GET("/", middleware.Authentication(), letterHandler.GetLettersByToSubditID)
+		letterRoute.GET("/incoming", middleware.Authentication(), letterHandler.GetIncomingLettersByToSubditID)
+		letterRoute.GET("/outcoming", middleware.Authentication(), letterHandler.GetOutcomingLettersByToSubditID)
+		letterRoute.GET("/archive", middleware.Authentication(), letterHandler.GetArchivedLettersByToSubditID)
 		letterRoute.PATCH("/:letterID", middleware.Authentication(), letterHandler.ArchiveLetter)
 		letterRoute.DELETE("/:letterID", middleware.Authentication(), letterHandler.DeleteLetterByID)
 		letterRoute.PATCH("/:letterID/archive", middleware.Authentication(), letterHandler.ArchiveLetter)

@@ -21,7 +21,9 @@ type letterService struct {
 type LetterService interface {
 	CreateLetter(letterPayload dto.CreateLetterRequest) (*dto.CreateLetterResponse, errs.ErrMessage)
 	GetLetterByID(id int) (*dto.GetUserLetterByIDResponse, errs.ErrMessage)
-	GetLettersByToSubditID(toSubditID int) (*dto.GetUserLettersByToSubditIDResponse, errs.ErrMessage)
+	GetIncomingLettersByToSubditID(toSubditID int, userID int) (*dto.GetUserLettersByToSubditIDResponse, errs.ErrMessage)
+	GetOutcomingLettersByToSubditID(toSubditID int, userID int) (*dto.GetUserLettersByToSubditIDResponse, errs.ErrMessage)
+	GetArchivedLettersByToSubditID(toSubditID int, userID int) (*dto.GetUserLettersByToSubditIDResponse, errs.ErrMessage)
 	ArchiveLetter(id int) (*dto.UserLetterArchiveResponse, errs.ErrMessage)
 	DeleteLetterByID(id int) (*dto.UserLetterDeleteResponse, errs.ErrMessage)
 }
@@ -96,30 +98,85 @@ func (l *letterService) GetLetterByID(id int) (*dto.GetUserLetterByIDResponse, e
 
 	response := dto.GetUserLetterByIDResponse{
 		Status:     http.StatusOK,
-		ID:         int(userLetter.Letter.ID),
-		Name:       userLetter.Letter.Name,
-		About:      userLetter.Letter.About,
-		Number:     userLetter.Letter.Number,
-		Datetime:   userLetter.Letter.Datetime,
-		From:       userLetter.Letter.From,
-		ToSubditID: int(userLetter.Letter.ToSubditID),
-		CreatedAt:  userLetter.Letter.CreatedAt,
-		UpdatedAt:  userLetter.Letter.UpdatedAt,
+		ID:         int(userLetter.ID),
+		Name:       userLetter.Name,
+		About:      userLetter.About,
+		Number:     userLetter.Number,
+		Datetime:   userLetter.Datetime,
+		From:       userLetter.From,
+		ToSubditID: int(userLetter.ToSubditID),
+		CreatedAt:  userLetter.CreatedAt,
+		UpdatedAt:  userLetter.UpdatedAt,
 	}
 
 	return &response, nil
 }
 
-func (l *letterService) GetLettersByToSubditID(toSubditID int) (*dto.GetUserLettersByToSubditIDResponse, errs.ErrMessage) {
-	userLetters, err := l.letterRepo.GetLettersByToSubditID(toSubditID)
+func (l *letterService) GetIncomingLettersByToSubditID(toSubditID int, userID int) (*dto.GetUserLettersByToSubditIDResponse, errs.ErrMessage) {
+	userLetters, err := l.letterRepo.GetIncomingLettersByToSubditID(toSubditID, userID)
 
 	if err != nil {
 		return nil, err
 	}
 
+	var userLettersResponse []dto.LetterResponse
+
+	for _, userLetter := range userLetters {
+		userLetterResponse := dto.LetterResponse{
+			ID:         int(userLetter.LetterID),
+			Name:       userLetter.Letter.Name,
+			About:      userLetter.Letter.About,
+			Number:     userLetter.Letter.Number,
+			Datetime:   userLetter.Letter.Datetime,
+			From:       userLetter.Letter.From,
+			Type:       userLetter.Letter.Type,
+			ToSubditID: int(userLetter.Letter.ToSubditID),
+			IsArchived: userLetter.IsArchived,
+			CreatedAt:  userLetter.Letter.CreatedAt,
+			UpdatedAt:  userLetter.Letter.UpdatedAt,
+		}
+
+		userLettersResponse = append(userLettersResponse, userLetterResponse)
+	}
+
 	response := dto.GetUserLettersByToSubditIDResponse{
 		Status:  http.StatusOK,
-		Letters: userLetters,
+		Letters: userLettersResponse,
+	}
+
+	return &response, nil
+}
+
+func (l *letterService) GetOutcomingLettersByToSubditID(toSubditID int, userID int) (*dto.GetUserLettersByToSubditIDResponse, errs.ErrMessage) {
+	userLetters, err := l.letterRepo.GetOutcomingLettersByToSubditID(toSubditID, userID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var userLettersResponse []dto.LetterResponse
+
+	for _, userLetter := range userLetters {
+		userLetterResponse := dto.LetterResponse{
+			ID:         int(userLetter.LetterID),
+			Name:       userLetter.Letter.Name,
+			About:      userLetter.Letter.About,
+			Number:     userLetter.Letter.Number,
+			Datetime:   userLetter.Letter.Datetime,
+			From:       userLetter.Letter.From,
+			Type:       userLetter.Letter.Type,
+			ToSubditID: int(userLetter.Letter.ToSubditID),
+			IsArchived: userLetter.IsArchived,
+			CreatedAt:  userLetter.Letter.CreatedAt,
+			UpdatedAt:  userLetter.Letter.UpdatedAt,
+		}
+
+		userLettersResponse = append(userLettersResponse, userLetterResponse)
+	}
+
+	response := dto.GetUserLettersByToSubditIDResponse{
+		Status:  http.StatusOK,
+		Letters: userLettersResponse,
 	}
 
 	return &response, nil
@@ -162,6 +219,40 @@ func (l *letterService) DeleteLetterByID(id int) (*dto.UserLetterDeleteResponse,
 	response := dto.UserLetterDeleteResponse{
 		Status:  http.StatusOK,
 		Message: "Letter has been deleted successfully",
+	}
+
+	return &response, nil
+}
+
+func (l *letterService) GetArchivedLettersByToSubditID(toSubditID int, userID int) (*dto.GetUserLettersByToSubditIDResponse, errs.ErrMessage) {
+	userLetters, err := l.letterRepo.GetArchivedLettersByToSubditID(toSubditID, userID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var userLettersResponse []dto.LetterResponse
+
+	for _, userLetter := range userLetters {
+		userLetterResponse := dto.LetterResponse{
+			ID:         int(userLetter.LetterID),
+			Name:       userLetter.Letter.Name,
+			About:      userLetter.Letter.About,
+			Number:     userLetter.Letter.Number,
+			Datetime:   userLetter.Letter.Datetime,
+			From:       userLetter.Letter.From,
+			ToSubditID: int(userLetter.Letter.ToSubditID),
+			IsArchived: userLetter.IsArchived,
+			CreatedAt:  userLetter.Letter.CreatedAt,
+			UpdatedAt:  userLetter.Letter.UpdatedAt,
+		}
+
+		userLettersResponse = append(userLettersResponse, userLetterResponse)
+	}
+
+	response := dto.GetUserLettersByToSubditIDResponse{
+		Status:  http.StatusOK,
+		Letters: userLettersResponse,
 	}
 
 	return &response, nil

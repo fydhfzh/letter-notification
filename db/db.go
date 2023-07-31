@@ -25,6 +25,7 @@ func InitializeDB() {
 	handleDBConnection()
 	createRequiredTable()
 	seedAdminData()
+	seedSubditData()
 	rescheduleAllMail()
 }
 
@@ -97,6 +98,34 @@ func seedAdminData() {
 	admin.Password = hashed
 
 	_ = db.Create(&admin)
+}
+
+func seedSubditData() {
+
+	subdits := []entity.Subdit{
+		{
+			Name: "Kawasan Khusus Lingkup I",
+		},
+		{
+			Name: "Fasilitasi Masalah Pertanahan",
+		},
+		{
+			Name: "Kawasan Khusus Lingkup II",
+		},
+		{
+			Name: "Administrasi Kawasan Perkotaan",
+		},
+		{
+			Name: "Batas Negara dan Pulau-Pulau Terluar",
+		},
+	}
+
+	result := db.Create(&subdits)
+
+	if err := result.Error; err != nil {
+		log.Panic(err)
+	}
+
 }
 
 func rescheduleAllMail() {

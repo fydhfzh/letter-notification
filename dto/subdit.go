@@ -2,8 +2,6 @@ package dto
 
 import (
 	"time"
-
-	"github.com/fydhfzh/letter-notification/entity"
 )
 
 type CreateSubditRequest struct {
@@ -12,6 +10,13 @@ type CreateSubditRequest struct {
 
 type CreateSubditResponse struct {
 	Status    int       `json:"status"`
+	ID        int       `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type SubditResponse struct {
 	ID        int       `json:"id"`
 	Name      string    `json:"name"`
 	CreatedAt time.Time `json:"created_at"`
@@ -27,8 +32,8 @@ type GetSubditByIDResponse struct {
 }
 
 type GetAllSubditResponse struct {
-	Status    int             `json:"status"`
-	AllSubdit []entity.Subdit `json:"all_subdit"`
+	Status    int              `json:"status"`
+	AllSubdit []SubditResponse `json:"all_subdit"`
 }
 
 type DeleteSubditByIDResponse struct {

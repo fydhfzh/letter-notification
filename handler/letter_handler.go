@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/fydhfzh/letter-notification/dto"
+	"github.com/fydhfzh/letter-notification/entity"
 	"github.com/fydhfzh/letter-notification/pkg/errs"
 	"github.com/fydhfzh/letter-notification/pkg/helpers"
 	"github.com/fydhfzh/letter-notification/service"
@@ -17,7 +18,9 @@ type letterHandler struct {
 type LetterHandler interface {
 	CreateLetter(c *gin.Context)
 	GetLetterByID(c *gin.Context)
-	GetLettersByToSubditID(c *gin.Context)
+	GetIncomingLettersByToSubditID(c *gin.Context)
+	GetOutcomingLettersByToSubditID(c *gin.Context)
+	GetArchivedLettersByToSubditID(c *gin.Context)
 	ArchiveLetter(c *gin.Context)
 	DeleteLetterByID(c *gin.Context)
 }
@@ -72,26 +75,57 @@ func (l *letterHandler) GetLetterByID(c *gin.Context) {
 	c.JSON(response.Status, response)
 }
 
-func (l *letterHandler) GetLettersByToSubditID(c *gin.Context) {
-	query, isOK := c.GetQuery("toSubditID")
+func (l *letterHandler) GetIncomingLettersByToSubditID(c *gin.Context) {
+	userData, isOK := c.MustGet("userData").(*entity.User)
 
 	if !isOK {
-		queryErr := errs.NewBadRequestError("Invalid query")
+		queryErr := errs.NewUnauthenticatedError("You are not authenticated")
 
 		c.JSON(queryErr.Status(), queryErr)
 		return
 	}
 
-	toSubditID, convErr := strconv.Atoi(query)
+	response, err := l.letterService.GetIncomingLettersByToSubditID(int(userData.SubditID), int(userData.ID))
 
-	if convErr != nil {
-		err := errs.NewBadRequestError("Invalid query")
-
+	if err != nil {
 		c.JSON(err.Status(), err)
 		return
 	}
 
-	response, err := l.letterService.GetLettersByToSubditID(toSubditID)
+	c.JSON(response.Status, response)
+}
+
+func (l *letterHandler) GetOutcomingLettersByToSubditID(c *gin.Context) {
+	userData, isOK := c.MustGet("userData").(*entity.User)
+
+	if !isOK {
+		queryErr := errs.NewUnauthenticatedError("You are not authenticated")
+
+		c.JSON(queryErr.Status(), queryErr)
+		return
+	}
+
+	response, err := l.letterService.GetOutcomingLettersByToSubditID(int(userData.SubditID), int(userData.ID))
+
+	if err != nil {
+		c.JSON(err.Status(), err)
+		return
+	}
+
+	c.JSON(response.Status, response)
+}
+
+func (l *letterHandler) GetArchivedLettersByToSubditID(c *gin.Context) {
+	userData, isOK := c.MustGet("userData").(*entity.User)
+
+	if !isOK {
+		queryErr := errs.NewUnauthenticatedError("You are not authenticated")
+
+		c.JSON(queryErr.Status(), queryErr)
+		return
+	}
+
+	response, err := l.letterService.GetArchivedLettersByToSubditID(int(userData.SubditID), int(userData.ID))
 
 	if err != nil {
 		c.JSON(err.Status(), err)
