@@ -8,12 +8,12 @@ import (
 
 type CreateLetterRequest struct {
 	Name       string    `json:"name" validate:"required"`
-	About      string    `json:"about"`
-	Number     string    `json:"number"`
-	Datetime   time.Time `json:"datetime"`
-	From       string    `json:"from"`
-	Type       string    `json:"type"`
-	ToSubditID int       `json:"to_subdit_id"`
+	About      string    `json:"about" validate:"required"`
+	Number     string    `json:"number" validate:"required"`
+	Datetime   time.Time `json:"datetime" validate:"required"`
+	From       string    `json:"from" validate:"required"`
+	Type       string    `json:"type" validate:"required"`
+	ToSubditID int       `json:"to_subdit_id" validate:"required"`
 }
 
 type CreateLetterResponse struct {

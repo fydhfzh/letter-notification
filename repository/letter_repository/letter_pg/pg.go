@@ -2,7 +2,6 @@ package letter_pg
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/fydhfzh/letter-notification/entity"
 	"github.com/fydhfzh/letter-notification/pkg/errs"
@@ -51,10 +50,10 @@ func (l *letterRepository) GetLetterByID(id int) (*entity.Letter, errs.ErrMessag
 	return &letter, nil
 }
 
-func (l *letterRepository) GetIncomingLettersByToSubditID(toSubditID int, userID int) ([]entity.UserLetter, errs.ErrMessage) {
+func (l *letterRepository) GetIncomingLetters(userID int) ([]entity.UserLetter, errs.ErrMessage) {
 	var letters []entity.UserLetter
 
-	result := l.db.Joins("Letter").Where("user_letters.user_id = ?", userID).Where("user_letters.is_archived = ?", false).Where("letters.type = ?", "incoming").Find(&letters)
+	result := l.db.InnerJoins("Letter").Where("type = ?", "incoming").Where("is_archived = ?", false).Where("user_id = ?", userID).Find(&letters)
 
 	if err := result.Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -71,10 +70,10 @@ func (l *letterRepository) GetIncomingLettersByToSubditID(toSubditID int, userID
 	return letters, nil
 }
 
-func (l *letterRepository) GetOutcomingLettersByToSubditID(toSubditID int, userID int) ([]entity.UserLetter, errs.ErrMessage) {
+func (l *letterRepository) GetOutcomingLetters(userID int) ([]entity.UserLetter, errs.ErrMessage) {
 	var letters []entity.UserLetter
 
-	result := l.db.Joins("Letter").Where("user_letters.user_id = ?", userID).Where("user_letters.is_archived = ?", false).Where("letters.type = ?", "outcoming").Find(&letters)
+	result := l.db.InnerJoins("Letter").Where("type = ?", "outcoming").Where("is_archived = ?", false).Where("user_id = ?", userID).Find(&letters)
 
 	if err := result.Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -119,12 +118,10 @@ func (l *letterRepository) SetIsNotifyTrue(id int) errs.ErrMessage {
 	return nil
 }
 
-func (l *letterRepository) GetArchivedLettersByToSubditID(toSubditID int, userID int) ([]entity.UserLetter, errs.ErrMessage) {
+func (l *letterRepository) GetArchivedLetters(userID int) ([]entity.UserLetter, errs.ErrMessage) {
 	var letters []entity.UserLetter
 
 	result := l.db.Joins("Letter").Where("user_letters.user_id = ?", userID).Where("user_letters.is_archived = ?", true).Find(&letters)
-
-	fmt.Println(letters[0].IsArchived)
 
 	if err := result.Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

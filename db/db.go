@@ -24,8 +24,8 @@ var (
 func InitializeDB() {
 	handleDBConnection()
 	createRequiredTable()
-	seedAdminData()
-	seedSubditData()
+	// seedAdminData()
+	// seedSubditData()
 	rescheduleAllMail()
 }
 

@@ -48,6 +48,7 @@ func (l *letterService) CreateLetter(letterPayload dto.CreateLetterRequest) (*dt
 		About:      letterPayload.About,
 		Number:     letterPayload.Number,
 		Datetime:   letterPayload.Datetime,
+		Type:       letterPayload.Type,
 		From:       letterPayload.From,
 		ToSubditID: uint(letterPayload.ToSubditID),
 	}
@@ -113,7 +114,7 @@ func (l *letterService) GetLetterByID(id int) (*dto.GetUserLetterByIDResponse, e
 }
 
 func (l *letterService) GetIncomingLettersByToSubditID(toSubditID int, userID int) (*dto.GetUserLettersByToSubditIDResponse, errs.ErrMessage) {
-	userLetters, err := l.letterRepo.GetIncomingLettersByToSubditID(toSubditID, userID)
+	userLetters, err := l.letterRepo.GetIncomingLetters(userID)
 
 	if err != nil {
 		return nil, err
@@ -148,7 +149,7 @@ func (l *letterService) GetIncomingLettersByToSubditID(toSubditID int, userID in
 }
 
 func (l *letterService) GetOutcomingLettersByToSubditID(toSubditID int, userID int) (*dto.GetUserLettersByToSubditIDResponse, errs.ErrMessage) {
-	userLetters, err := l.letterRepo.GetOutcomingLettersByToSubditID(toSubditID, userID)
+	userLetters, err := l.letterRepo.GetOutcomingLetters(userID)
 
 	if err != nil {
 		return nil, err
@@ -225,7 +226,7 @@ func (l *letterService) DeleteLetterByID(id int) (*dto.UserLetterDeleteResponse,
 }
 
 func (l *letterService) GetArchivedLettersByToSubditID(toSubditID int, userID int) (*dto.GetUserLettersByToSubditIDResponse, errs.ErrMessage) {
-	userLetters, err := l.letterRepo.GetArchivedLettersByToSubditID(toSubditID, userID)
+	userLetters, err := l.letterRepo.GetArchivedLetters(userID)
 
 	if err != nil {
 		return nil, err

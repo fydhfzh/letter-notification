@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/fydhfzh/letter-notification/dto"
@@ -97,6 +98,7 @@ func (l *letterHandler) GetIncomingLettersByToSubditID(c *gin.Context) {
 
 func (l *letterHandler) GetOutcomingLettersByToSubditID(c *gin.Context) {
 	userData, isOK := c.MustGet("userData").(*entity.User)
+	fmt.Println(userData.ID)
 
 	if !isOK {
 		queryErr := errs.NewUnauthenticatedError("You are not authenticated")
